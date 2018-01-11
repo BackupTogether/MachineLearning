@@ -20,15 +20,17 @@ test = pd.read_csv('~/Documents/Files/oths/2018/ML/MachineLearning/San Francisco
 label = preprocessing.LabelEncoder()
 crime = label.fit_transform(train.Category)
 
-# 对日期、星期几、地区三项特征进行二值化
+# 对训练集中日期、星期几、地区三项特征进行二值化
 days = pd.get_dummies(train.DayOfWeek)
 district = pd.get_dummies(train.PdDistrict)
 hour = pd.get_dummies(train.Dates.dt.hour)
 
-# 抽取训练集中的
+# 抽取训练集中的 日期、星期几、地区
 train_data = pd.concat([days, district, hour], axis=1)
+# 训练集分类结果
 train_data['crime'] = crime
 
+# 测试集相同处理
 days = pd.get_dummies(test.DayOfWeek)
 district = pd.get_dummies(test.PdDistrict)
 hour = pd.get_dummies(test.Dates.dt.hour)
@@ -45,8 +47,24 @@ model.fit(training[feature_list], training['crime'])
 predicted = np.array(model.predict_proba(validation[feature_list]))
 print "朴素贝叶斯log损失为 %f" % (log_loss(validation['crime'], predicted))
 
+# 跑测试集并输出结果到 output-NB.csv
+test_predicted = np.array(model.predict_proba(test_data[feature_list]))
+col_names = np.sort(train['Category'].unique())
+print col_names
+result = pd.DataFrame(data=test_predicted, columns=col_names)
+result['Id'] = test['Id'].astype(int)
+result.to_csv('~/Documents/Files/oths/2018/ML/MachineLearning/San Francisco Crime Classification/output-NB.csv', index=False)
+
 model = LogisticRegression(C=0.1)
 model.fit(training[feature_list], training['crime'])
 
 predicted = np.array(model.predict_proba(validation[feature_list]))
 print "逻辑回归log损失为 %f" %(log_loss(validation['crime'], predicted))
+
+# 跑测试集并输出结果到 output-LR.csv
+test_predicted = np.array(model.predict_proba(test_data[feature_list]))
+col_names = np.sort(train['Category'].unique())
+print col_names
+result = pd.DataFrame(data=test_predicted, columns=col_names)
+result['Id'] = test['Id'].astype(int)
+result.to_csv('~/Documents/Files/oths/2018/ML/MachineLearning/San Francisco Crime Classification/output-LR.csv', index=False)
