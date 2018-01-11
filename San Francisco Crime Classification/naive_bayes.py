@@ -42,7 +42,7 @@ model = BernoulliNB()
 feature_list = training.columns.tolist()
 feature_list = feature_list[:len(feature_list) - 1]
 print '选取的特征列：', feature_list
-model.fit(training[feature_list], training['crime'])
+model.fit(train_data[feature_list], train_data['crime'])
 
 predicted = np.array(model.predict_proba(validation[feature_list]))
 print "朴素贝叶斯log损失为 %f" % (log_loss(validation['crime'], predicted))
@@ -56,7 +56,7 @@ result['Id'] = test['Id'].astype(int)
 result.to_csv('~/Documents/Files/oths/2018/ML/MachineLearning/San Francisco Crime Classification/output-NB.csv', index=False)
 
 model = LogisticRegression(C=0.1)
-model.fit(training[feature_list], training['crime'])
+model.fit(train_data[feature_list], train_data['crime'])
 
 predicted = np.array(model.predict_proba(validation[feature_list]))
 print "逻辑回归log损失为 %f" %(log_loss(validation['crime'], predicted))
